@@ -45,8 +45,7 @@ class SessionSetupAndX
       '\x57\x69\x6e\x64\x6f\x77\x73\x20\x32\x30\x30\x30\x20\x35\x2e\x30\x00' # Native LAN Manager:  Windows 2000 5.0
     ]
 
-    @session_setup_andx_response = []
-    @user_id = []
+    @native_os = []
 
     make_request
   end
@@ -64,7 +63,11 @@ class SessionSetupAndX
   end
 
   def user_id
-    @user_id.join
+    @user_id
+  end
+
+  def native_os
+    @native_os
   end
 
   def make_request
@@ -82,10 +85,20 @@ class SessionSetupAndX
   end
 
   def parse_response(response)
-    @netbios_session_service = response[0..3]
-    @smb_header = response[4..35]
+    @netbios_session_service     = response[0..3]
+    @smb_header                  = response[4..35]
     @session_setup_andx_response = response[36..-1]
 
-    @user_id = @smb_header[-4..-3].map {|s| '\x' + s.to_s(16)}
+    @user_id = @smb_header[-4..-3].map {|s| '\x' + s.to_s(16)}.join
+
+    @session_setup_andx_response[9..-1].map do |s|
+      if s == 0 then
+        break
+      else
+        @native_os.push(s.chr)
+      end
+    end
+
+    @native_os = @native_os.join
   end
 end

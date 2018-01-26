@@ -19,6 +19,8 @@ def ms17_010_scan
 
   sock.write(session_setup_andx.request)
   session_setup_andx.response = sock.readpartial(4096).unpack("C*")
+  puts "[+] OS: " + session_setup_andx.native_os
+
   tree_connect_andx = TreeConnectAndX.new(session_setup_andx.user_id, host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
 
   sock.write(tree_connect_andx.request)
