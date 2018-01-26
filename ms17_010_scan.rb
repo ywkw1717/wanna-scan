@@ -5,9 +5,9 @@ require_relative 'tree_connect_andx'
 require_relative 'peek_named_pipe'
 
 class Ms17010Scan
-  def initialize(logger: STDERR)
+  def initialize(host, logger: STDERR)
     @logger             = logger
-    @host               = '10.10.10.10'
+    @host               = host
     @port               = 445
     @sock               = TCPSocket.open(@host, @port)
     @negotiate_protocol = NegotiateProtocol.new
@@ -36,7 +36,7 @@ class Ms17010Scan
     peek_named_pipe.response = @sock.readpartial(4096).unpack("C*")
 
     if peek_named_pipe.nt_status == 'c0000205' then
-      @logger.puts "message"
+      @logger.puts "[*] " + @host + " has a vulnerability of MS17-010"
     end
 
     @sock.close
