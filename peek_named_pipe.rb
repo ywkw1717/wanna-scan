@@ -67,7 +67,7 @@ class PeekNamedPipe
   end
 
   def nt_status
-    @nt_status.join
+    @nt_status
   end
 
   def make_request
@@ -86,11 +86,9 @@ class PeekNamedPipe
 
   def parse_response(response)
     @netbios_session_service = response[0..3]
-    @smb_header = response[4..35]
-    @trans_response = response[36..-1]
+    @smb_header              = response[4..35]
+    @trans_response          = response[36..-1]
 
-    @smb_header[5..8]
-
-    @nt_status = @smb_header[5..8].map {|s| s.to_s(16).rjust(2, "0")}.reverse
+    @nt_status = @smb_header[5..8].map {|s| s.to_s(16).rjust(2, "0")}.reverse.join
   end
 end
