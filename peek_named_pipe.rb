@@ -2,9 +2,6 @@ require_relative 'smb_header'
 
 class PeekNamedPipe < SMBHeader
   def initialize(tree_id, user_id)
-    @request  = []
-    @response = []
-
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x4a' # Length
@@ -37,37 +34,15 @@ class PeekNamedPipe < SMBHeader
     @nt_status = []
 
     super(smb_command: '\x25', tree_id: tree_id, user_id: user_id)
-    make_request
-  end
-
-  def request
-    @request.join
+    make_request(@netbios_session_service, @smb_header, @trans_request)
   end
 
   def response=(data)
     parse_response(data)
   end
 
-  def response
-    @response
-  end
-
   def nt_status
     @nt_status
-  end
-
-  def make_request
-    tmp = []
-
-    tmp.concat(@netbios_session_service)
-    tmp.concat(@smb_header)
-    tmp.concat(@trans_request)
-    tmp = tmp.join.split("\\x")
-    tmp.shift # delete first element
-
-    tmp.map do |s|
-      @request.push([s.hex].pack("C*"))
-    end
   end
 
   def parse_response(response)

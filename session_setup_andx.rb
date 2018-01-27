@@ -2,9 +2,6 @@ require_relative 'smb_header'
 
 class SessionSetupAndX < SMBHeader
   def initialize
-    @request  = []
-    @response = []
-
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x63' # Length
@@ -33,19 +30,11 @@ class SessionSetupAndX < SMBHeader
     @native_os = []
 
     super(smb_command: '\x73', flags2: '\x01\x20')
-    make_request
-  end
-
-  def request
-    @request.join
+    make_request(@netbios_session_service, @smb_header, @session_setup_andx_request)
   end
 
   def response=(data)
     parse_response(data)
-  end
-
-  def response
-    @response
   end
 
   def user_id
@@ -54,20 +43,6 @@ class SessionSetupAndX < SMBHeader
 
   def native_os
     @native_os
-  end
-
-  def make_request
-    tmp = []
-
-    tmp.concat(@netbios_session_service)
-    tmp.concat(@smb_header)
-    tmp.concat(@session_setup_andx_request)
-    tmp = tmp.join.split("\\x")
-    tmp.shift # delete first element
-
-    tmp.map do |s|
-      @request.push([s.hex].pack("C*"))
-    end
   end
 
   def parse_response(response)

@@ -19,4 +19,27 @@ class SMBHeader
 
     @smb_header
   end
+
+  def make_request(*elm)
+    @request = []
+    tmp      = []
+
+    elm.map {|s| tmp.concat(s)}
+
+    # tmp.concat(@netbios_session_service)
+    # tmp.concat(@smb_header)
+    # tmp.concat(@trans_request)
+    tmp = tmp.join.split("\\x")
+    tmp.shift # delete first element
+
+    tmp.map do |s|
+      @request.push([s.hex].pack("C*"))
+    end
+
+    @request = @request.join
+  end
+
+  def request
+    @request
+  end
 end

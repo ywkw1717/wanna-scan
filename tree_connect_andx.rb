@@ -2,9 +2,6 @@ require_relative 'smb_header'
 
 class TreeConnectAndX < SMBHeader
   def initialize(user_id, ip)
-    @request  = []
-    @response = []
-
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x45' # Length
@@ -29,37 +26,15 @@ class TreeConnectAndX < SMBHeader
     @tree_id = []
 
     super(smb_command: '\x75', user_id: user_id)
-    make_request
-  end
-
-  def request
-    @request.join
+    make_request(@netbios_session_service, @smb_header, @tree_connect_andx_request)
   end
 
   def response=(data)
     parse_response(data)
   end
 
-  def response
-    @response
-  end
-
   def tree_id
     @tree_id.join
-  end
-
-  def make_request
-    tmp = []
-
-    tmp.concat(@netbios_session_service)
-    tmp.concat(@smb_header)
-    tmp.concat(@tree_connect_andx_request)
-    tmp = tmp.join.split("\\x")
-    tmp.shift # delete first element
-
-    tmp.map do |s|
-      @request.push([s.hex].pack("C*"))
-    end
   end
 
   def parse_response(response)

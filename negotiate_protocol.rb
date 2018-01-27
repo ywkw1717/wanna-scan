@@ -2,9 +2,6 @@ require_relative 'smb_header'
 
 class NegotiateProtocol < SMBHeader
   def initialize
-    @request  = []
-    @response = []
-
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x54' # Length
@@ -20,11 +17,7 @@ class NegotiateProtocol < SMBHeader
     ]
 
     super(smb_command: '\x72')
-    make_request
-  end
-
-  def request
-    @request.join
+    make_request(@netbios_session_service, @smb_header, @negotiate_protocol_request)
   end
 
   def response=(data)
@@ -33,19 +26,5 @@ class NegotiateProtocol < SMBHeader
 
   def response
     @response
-  end
-
-  def make_request
-    tmp = []
-
-    tmp.concat(@netbios_session_service)
-    tmp.concat(@smb_header)
-    tmp.concat(@negotiate_protocol_request)
-    tmp = tmp.join.split("\\x")
-    tmp.shift # delete first element
-
-    tmp.map do |s|
-      @request.push([s.hex].pack("C*"))
-    end
   end
 end
