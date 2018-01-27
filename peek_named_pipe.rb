@@ -1,4 +1,6 @@
-class PeekNamedPipe
+require_relative 'smb_header'
+
+class PeekNamedPipe < SMBHeader
   def initialize(tree_id, user_id)
     @request  = []
     @response = []
@@ -6,23 +8,6 @@ class PeekNamedPipe
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x4a' # Length
-    ]
-
-    @smb_header = [
-      '\xff\x53\x4d\x42', # Server Component: SMB
-      '\x25', # SMB Command: Trans (0x25)
-      '\x00', # Error Class: Success (0x00)
-      '\x00', # Reserved
-      '\x00\x00', # Error Code: No Error
-      '\x18', # Flags
-      '\x01\x28', # Flags2
-      '\x00\x00', # Process ID High
-      '\x00\x00\x00\x00\x00\x00\x00\x00', # Signature
-      '\x00\x00', # Reserved
-      tree_id, # Tree ID
-      '\xf0\x58', # Process ID
-      user_id, # User ID
-      '\x38\xd8' # Multiplex ID
     ]
 
     @trans_request = [
@@ -51,6 +36,7 @@ class PeekNamedPipe
     @trans_response = []
     @nt_status = []
 
+    super(smb_command: '\x25', tree_id: tree_id, user_id: user_id)
     make_request
   end
 

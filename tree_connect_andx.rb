@@ -1,4 +1,6 @@
-class TreeConnectAndX
+require_relative 'smb_header'
+
+class TreeConnectAndX < SMBHeader
   def initialize(user_id, ip)
     @request  = []
     @response = []
@@ -6,23 +8,6 @@ class TreeConnectAndX
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x45' # Length
-    ]
-
-    @smb_header = [
-      '\xff\x53\x4d\x42', # Server Component: SMB
-      '\x75', # SMB Command: Tree Connect AndX (0x75)
-      '\x00', # Error Class: Success (0x00)
-      '\x00', # Reserved
-      '\x00\x00', # Error Code: No Error
-      '\x18', # Flags
-      '\x01\x28', # Flags2
-      '\x00\x00', # Process ID High
-      '\x00\x00\x00\x00\x00\x00\x00\x00', # Signature
-      '\x00\x00', # Reserved
-      '\x00\x00', # Tree ID
-      '\xf0\x58', # Process ID
-      user_id, # User ID
-      '\x38\xd8' # Multiplex ID
     ]
 
     @tree_connect_andx_request = [
@@ -43,6 +28,7 @@ class TreeConnectAndX
     @tree_connect_andx_response = []
     @tree_id = []
 
+    super(smb_command: '\x75', user_id: user_id)
     make_request
   end
 

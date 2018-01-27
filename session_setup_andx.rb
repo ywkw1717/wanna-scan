@@ -1,4 +1,6 @@
-class SessionSetupAndX
+require_relative 'smb_header'
+
+class SessionSetupAndX < SMBHeader
   def initialize
     @request  = []
     @response = []
@@ -6,23 +8,6 @@ class SessionSetupAndX
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       '\x00\x00\x63' # Length
-    ]
-
-    @smb_header = [
-      '\xff\x53\x4d\x42', # Server Component: SMB
-      '\x73', # SMB Command: Session Setup AndX (0x73)
-      '\x00', # Error Class: Success (0x00)
-      '\x00', # Reserved
-      '\x00\x00', # Error Code: No Error
-      '\x18', # Flags
-      '\x01\x20', # Flags2
-      '\x00\x00', # Process ID High
-      '\x00\x00\x00\x00\x00\x00\x00\x00', # Signature
-      '\x00\x00', # Reserved
-      '\x00\x00', # Tree ID
-      '\xf0\x58', # Process ID
-      '\x00\x00', # User ID
-      '\x38\xd8' # Multiplex ID
     ]
 
     @session_setup_andx_request = [
@@ -47,6 +32,7 @@ class SessionSetupAndX
 
     @native_os = []
 
+    super(smb_command: '\x73', flags2: '\x01\x20')
     make_request
   end
 
