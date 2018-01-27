@@ -26,9 +26,6 @@ class SMBHeader
 
     elm.map {|s| tmp.concat(s)}
 
-    # tmp.concat(@netbios_session_service)
-    # tmp.concat(@smb_header)
-    # tmp.concat(@trans_request)
     tmp = tmp.join.split("\\x")
     tmp.shift # delete first element
 
