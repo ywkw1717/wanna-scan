@@ -44,15 +44,12 @@ class SessionSetupAndX < SMB
     @smb_header                  = response[4..35]
     @session_setup_andx_response = response[36..-1]
 
-    @user_id   = @smb_header[-4..-3].map {|s| '\x' + s.to_s(16)}.join
+    @user_id   = @smb_header[-4..-3].map { |s| '\x' + s.to_s(16) }.join
     @native_os = []
 
     @session_setup_andx_response[9..-1].map do |s|
-      if s == 0 then
-        break
-      else
-        @native_os.push(s.chr)
-      end
+      break if s.zero?
+      @native_os.push(s.chr)
     end
 
     @native_os = @native_os.join

@@ -43,6 +43,6 @@ class PeekNamedPipe < SMB
     @smb_header              = response[4..35]
     @trans_response          = response[36..-1]
 
-    @nt_status = @smb_header[5..8].map {|s| s.to_s(16).rjust(2, "0")}.reverse.join
+    @nt_status = @smb_header[5..8].map { |s| s.to_s(16).rjust(2, '0') }.reverse.join
   end
 end

@@ -27,7 +27,7 @@ class Ms17010Scan
       @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
       @logger.puts "[*] OS: " + @session_setup_andx.native_os
 
-      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
+      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join)
 
       @sock.write(@tree_connect_andx.request)
       @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
@@ -36,7 +36,7 @@ class Ms17010Scan
       @sock.write(peek_named_pipe.request)
       peek_named_pipe.response = @sock.readpartial(4096).unpack("C*")
 
-      if peek_named_pipe.nt_status == 'c0000205' then
+      if peek_named_pipe.nt_status == 'c0000205'
         @logger.puts "[+] " + @host + " has a vulnerability of MS17-010"
       else
         @logger.puts "[-] The vulnerability is not found"

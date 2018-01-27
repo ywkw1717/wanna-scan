@@ -45,12 +45,20 @@ class DoublePulsarScan < SMB
       @sock.write(@session_setup_andx.request)
       @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
 
-      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
+      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join)
 
       @sock.write(@tree_connect_andx.request)
       @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
 
-      super(length: '\x00\x00\x4f', smb_command: '\x32', flags2: '\x07\xc0', tree_id: @tree_connect_andx.tree_id, user_id: @session_setup_andx.user_id, multiplex_id: '\x41\x00')
+      super(
+        length: '\x00\x00\x4f',
+        smb_command: '\x32',
+        flags2: '\x07\xc0',
+        tree_id: @tree_connect_andx.tree_id,
+        user_id: @session_setup_andx.user_id,
+        multiplex_id: '\x41\x00'
+      )
+
       make_request(@netbios_session_service, @smb_header, @trans2_request)
     rescue => e
       puts e
@@ -63,7 +71,7 @@ class DoublePulsarScan < SMB
     begin
       parse_response(@sock.readpartial(4096).unpack("C*"))
 
-      if @multiplex_id[0] == 81 then
+      if @multiplex_id[0] == 81
         @logger.puts "[+] " + @host + " has been infected with DoublePulsar"
       else
         @logger.puts "[-] DoublePulsar is not found"

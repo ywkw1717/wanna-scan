@@ -35,6 +35,6 @@ class TreeConnectAndX < SMB
     @smb_header = response[4..35]
     @tree_connect_andx_response = response[36..-1]
 
-    @tree_id = @smb_header[-8..-7].map {|s| '\x' + s.to_s(16)}.join
+    @tree_id = @smb_header[-8..-7].map { |s| '\x' + s.to_s(16) }.join
   end
 end
