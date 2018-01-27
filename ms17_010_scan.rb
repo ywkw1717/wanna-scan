@@ -26,12 +26,12 @@ class Ms17010Scan
     @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
     @logger.puts "[+] OS: " + @session_setup_andx.native_os
 
-    tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
+    @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
 
-    @sock.write(tree_connect_andx.request)
-    tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
+    @sock.write(@tree_connect_andx.request)
+    @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
 
-    peek_named_pipe = PeekNamedPipe.new(tree_connect_andx.tree_id, @session_setup_andx.user_id)
+    peek_named_pipe = PeekNamedPipe.new(@tree_connect_andx.tree_id, @session_setup_andx.user_id)
     @sock.write(peek_named_pipe.request)
     peek_named_pipe.response = @sock.readpartial(4096).unpack("C*")
 
@@ -40,5 +40,13 @@ class Ms17010Scan
     end
 
     @sock.close
+  end
+
+  def session_setup_andx
+    @session_setup_andx
+  end
+
+  def tree_connect_andx
+    @tree_connect_andx
   end
 end
