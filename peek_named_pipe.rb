@@ -25,9 +25,6 @@ class PeekNamedPipe < SMB
       '\x5c\x50\x49\x50\x45\x5c\x00' # Transaction Name: \PIPE\
     ]
 
-    @trans_response = []
-    @nt_status = []
-
     super(length: '\x00\x00\x4a', smb_command: '\x25', tree_id: tree_id, user_id: user_id)
     make_request(@netbios_session_service, @smb_header, @trans_request)
   end

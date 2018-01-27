@@ -17,9 +17,6 @@ class TreeConnectAndX < SMB
       '\x3f\x3f\x3f\x3f\x3f\x00'
     ]
 
-    @tree_connect_andx_response = []
-    @tree_id = []
-
     super(length: '\x00\x00\x45', smb_command: '\x75', user_id: user_id)
     make_request(@netbios_session_service, @smb_header, @tree_connect_andx_request)
   end
@@ -29,7 +26,7 @@ class TreeConnectAndX < SMB
   end
 
   def tree_id
-    @tree_id.join
+    @tree_id
   end
 
   def parse_response(response)
@@ -37,6 +34,6 @@ class TreeConnectAndX < SMB
     @smb_header = response[4..35]
     @tree_connect_andx_response = response[36..-1]
 
-    @tree_id = @smb_header[-8..-7].map {|s| '\x' + s.to_s(16)}
+    @tree_id = @smb_header[-8..-7].map {|s| '\x' + s.to_s(16)}.join
   end
 end
