@@ -38,32 +38,43 @@ class DoublePulsarScan < SMB
     @logger.puts("\n[*] DoublePulsarScan start")
 
     @sock.write(@negotiate_protocol.request)
-    @negotiate_protocol.response = @sock.readpartial(4096).unpack("C*")
 
-    @sock.write(@session_setup_andx.request)
-    @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
+    begin
+      @negotiate_protocol.response = @sock.readpartial(4096).unpack("C*")
 
-    @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
+      @sock.write(@session_setup_andx.request)
+      @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
 
-    @sock.write(@tree_connect_andx.request)
-    @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
+      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
 
-    super(length: '\x00\x00\x4f', smb_command: '\x32', flags2: '\x07\xc0', tree_id: @tree_connect_andx.tree_id, user_id: @session_setup_andx.user_id, multiplex_id: '\x41\x00')
-    make_request(@netbios_session_service, @smb_header, @trans2_request)
+      @sock.write(@tree_connect_andx.request)
+      @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
+
+      super(length: '\x00\x00\x4f', smb_command: '\x32', flags2: '\x07\xc0', tree_id: @tree_connect_andx.tree_id, user_id: @session_setup_andx.user_id, multiplex_id: '\x41\x00')
+      make_request(@netbios_session_service, @smb_header, @trans2_request)
+    rescue => e
+      puts e
+    end
   end
 
   def start
     @sock.write(@request)
-    parse_response(@sock.readpartial(4096).unpack("C*"))
 
-    if @multiplex_id[0] == 81 then
-      @logger.puts "[+] " + @host + " has been infected with DoublePulsar"
-    else
-      @logger.puts "[-] DoublePulsar is not found"
+    begin
+      parse_response(@sock.readpartial(4096).unpack("C*"))
+
+      if @multiplex_id[0] == 81 then
+        @logger.puts "[+] " + @host + " has been infected with DoublePulsar"
+      else
+        @logger.puts "[-] DoublePulsar is not found"
+      end
+
+      @logger.puts("[*] DoublePulsarScan finish")
+    rescue => e
+      puts e
+    ensure
+      @sock.close
     end
-
-    @logger.puts("[*] DoublePulsarScan finish")
-    @sock.close
   end
 
   def parse_response(response)
