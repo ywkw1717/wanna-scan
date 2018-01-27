@@ -1,12 +1,7 @@
-require_relative 'smb_header'
+require_relative 'smb'
 
-class SessionSetupAndX < SMBHeader
+class SessionSetupAndX < SMB
   def initialize
-    @netbios_session_service = [
-      '\x00', # Message Type: Session message (0x00)
-      '\x00\x00\x63' # Length
-    ]
-
     @session_setup_andx_request = [
       '\x0d', # Word Count (WCT)
       '\xff', # AndXCommand: No further commands (0xff)
@@ -29,7 +24,7 @@ class SessionSetupAndX < SMBHeader
 
     @native_os = []
 
-    super(smb_command: '\x73', flags2: '\x01\x20')
+    super(length: '\x00\x00\x63', smb_command: '\x73', flags2: '\x01\x20')
     make_request(@netbios_session_service, @smb_header, @session_setup_andx_request)
   end
 

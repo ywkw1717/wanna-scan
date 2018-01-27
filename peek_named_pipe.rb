@@ -1,12 +1,7 @@
-require_relative 'smb_header'
+require_relative 'smb'
 
-class PeekNamedPipe < SMBHeader
+class PeekNamedPipe < SMB
   def initialize(tree_id, user_id)
-    @netbios_session_service = [
-      '\x00', # Message Type: Session message (0x00)
-      '\x00\x00\x4a' # Length
-    ]
-
     @trans_request = [
       '\x10', # Word Count (WCT)
       '\x00\x00', # Total Parameter Count
@@ -33,7 +28,7 @@ class PeekNamedPipe < SMBHeader
     @trans_response = []
     @nt_status = []
 
-    super(smb_command: '\x25', tree_id: tree_id, user_id: user_id)
+    super(length: '\x00\x00\x4a', smb_command: '\x25', tree_id: tree_id, user_id: user_id)
     make_request(@netbios_session_service, @smb_header, @trans_request)
   end
 

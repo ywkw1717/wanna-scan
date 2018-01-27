@@ -1,5 +1,10 @@
-class SMBHeader
-  def initialize(smb_command: '\x00', flags2: '\x01\x28', tree_id: '\x00\x00', user_id: '\x00\x00')
+class SMB
+  def initialize(length: '\x00\x00x\00', smb_command: '\x00', flags2: '\x01\x28', tree_id: '\x00\x00', user_id: '\x00\x00')
+    @netbios_session_service = [
+      '\x00', # Message Type: Session message (0x00)
+      length # Length
+    ]
+
     @smb_header = [
       '\xff\x53\x4d\x42', # Server Component: SMB
       smb_command, # SMB Command: Negotiate Protocol
