@@ -1,5 +1,5 @@
 class SMB
-  def initialize(length: '\x00\x00x\00', smb_command: '\x00', flags2: '\x01\x28', tree_id: '\x00\x00', user_id: '\x00\x00')
+  def initialize(length: '\x00\x00x\00', smb_command: '\x00', flags2: '\x01\x28', tree_id: '\x00\x00', user_id: '\x00\x00', multiplex_id: '\x38\xd8')
     @netbios_session_service = [
       '\x00', # Message Type: Session message (0x00)
       length # Length
@@ -19,7 +19,7 @@ class SMB
       tree_id, # Tree ID
       '\xf0\x58', # Process ID
       user_id, # User ID
-      '\x38\xd8' # Multiplex ID
+      multiplex_id # Multiplex ID
     ]
 
     @smb_header
