@@ -15,7 +15,7 @@ class Ms17010Scan
   end
 
   def start
-    @logger.puts("[+] Scan start")
+    @logger.puts("[*] MS17-010 Scan start")
 
     @sock.write(@negotiate_protocol.request)
 
@@ -24,7 +24,7 @@ class Ms17010Scan
 
     @sock.write(@session_setup_andx.request)
     @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
-    @logger.puts "[+] OS: " + @session_setup_andx.native_os
+    @logger.puts "[*] OS: " + @session_setup_andx.native_os
 
     @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map {|s| '\x' + s.to_s(16)}.join)
 
@@ -36,9 +36,12 @@ class Ms17010Scan
     peek_named_pipe.response = @sock.readpartial(4096).unpack("C*")
 
     if peek_named_pipe.nt_status == 'c0000205' then
-      @logger.puts "[*] " + @host + " has a vulnerability of MS17-010"
+      @logger.puts "[+] " + @host + " has a vulnerability of MS17-010"
+    else
+      @logger.puts "[-] The vulnerability is not found"
     end
 
+    @logger.puts("[*] MS17-010 Scan finish")
     @sock.close
   end
 
