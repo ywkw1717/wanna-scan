@@ -2,6 +2,8 @@ require_relative 'smb'
 
 class NegotiateProtocol < SMB
   def initialize
+    super(length: '\x00\x00\x54', smb_command: '\x72')
+
     @negotiate_protocol_request = [
       '\x00', # Word Count (WCT)
       '\x31\x00', # Byte Count (BCC)
@@ -11,7 +13,6 @@ class NegotiateProtocol < SMB
       '\x02\x4e\x54\x20\x4c\x4d\x20\x30\x2e\x31\x32\x00' # Dialect: NT LM 0.12
     ]
 
-    super(length: '\x00\x00\x54', smb_command: '\x72')
     make_request(@netbios_session_service, @smb_header, @negotiate_protocol_request)
   end
 

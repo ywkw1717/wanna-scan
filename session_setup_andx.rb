@@ -2,6 +2,8 @@ require_relative 'smb'
 
 class SessionSetupAndX < SMB
   def initialize
+    super(length: '\x00\x00\x63', smb_command: '\x73', flags2: '\x01\x20')
+
     @session_setup_andx_request = [
       '\x0d', # Word Count (WCT)
       '\xff', # AndXCommand: No further commands (0xff)
@@ -22,7 +24,6 @@ class SessionSetupAndX < SMB
       '\x57\x69\x6e\x64\x6f\x77\x73\x20\x32\x30\x30\x30\x20\x35\x2e\x30\x00' # Native LAN Manager:  Windows 2000 5.0
     ]
 
-    super(length: '\x00\x00\x63', smb_command: '\x73', flags2: '\x01\x20')
     make_request(@netbios_session_service, @smb_header, @session_setup_andx_request)
   end
 

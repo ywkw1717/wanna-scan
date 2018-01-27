@@ -2,6 +2,8 @@ require_relative 'smb'
 
 class PeekNamedPipe < SMB
   def initialize(tree_id, user_id)
+    super(length: '\x00\x00\x4a', smb_command: '\x25', tree_id: tree_id, user_id: user_id)
+
     @trans_request = [
       '\x10', # Word Count (WCT)
       '\x00\x00', # Total Parameter Count
@@ -25,7 +27,6 @@ class PeekNamedPipe < SMB
       '\x5c\x50\x49\x50\x45\x5c\x00' # Transaction Name: \PIPE\
     ]
 
-    super(length: '\x00\x00\x4a', smb_command: '\x25', tree_id: tree_id, user_id: user_id)
     make_request(@netbios_session_service, @smb_header, @trans_request)
   end
 

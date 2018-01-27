@@ -2,6 +2,8 @@ require_relative 'smb'
 
 class TreeConnectAndX < SMB
   def initialize(user_id, ip)
+    super(length: '\x00\x00\x45', smb_command: '\x75', user_id: user_id)
+
     @tree_connect_andx_request = [
       '\x04', # Word Count (WCT)
       '\xff', # AndXCommand: No further commands (0xff)
@@ -17,7 +19,6 @@ class TreeConnectAndX < SMB
       '\x3f\x3f\x3f\x3f\x3f\x00'
     ]
 
-    super(length: '\x00\x00\x45', smb_command: '\x75', user_id: user_id)
     make_request(@netbios_session_service, @smb_header, @tree_connect_andx_request)
   end
 
