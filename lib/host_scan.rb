@@ -9,6 +9,8 @@ class HostScan
 
       @ip_list.push(ip)
     end
+
+    @ip_list.sort_by! { |s| s.split(".").map(&:to_i) }
   end
 
   def ip_list
