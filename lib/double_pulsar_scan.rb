@@ -35,7 +35,7 @@ class DoublePulsarScan < SMB
       '\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # other data
     ]
 
-    @logger.puts("\n[*] DoublePulsarScan start")
+    @logger.puts("\n[*] DoublePulsar Scan start")
 
     @sock.write(@negotiate_protocol.request)
 
@@ -77,7 +77,7 @@ class DoublePulsarScan < SMB
         @logger.puts "[-] DoublePulsar is not found"
       end
 
-      @logger.puts("[*] DoublePulsarScan finish")
+      @logger.puts("[*] DoublePulsar Scan finish")
     rescue => e
       puts e
     ensure
