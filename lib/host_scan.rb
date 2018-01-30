@@ -1,6 +1,6 @@
 class HostScan
-  def initialize
-    ip_command = `sudo arp-scan -I enp0s9 -l`
+  def initialize(nic)
+    ip_command = `sudo arp-scan -I #{nic} -l`
     @ip_list   = []
 
     ip_command.each_line do |s|
