@@ -49,7 +49,7 @@ class SessionSetupAndX < SMB
 
     @session_setup_andx_response[9..-1].map do |s|
       break if s.zero?
-      @native_os.push(s.chr)
+      @native_os << s.chr
     end
 
     @native_os = @native_os.join

@@ -6,7 +6,7 @@ class PortScan
   def start(ip)
     result = `nmap -n -p 445 -PN -open #{ip} |grep open`
     return if result.empty?
-    @open_445_list.push(ip)
+    @open_445_list << ip
   end
 
   def open_445_list

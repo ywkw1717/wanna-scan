@@ -7,7 +7,7 @@ class HostScan
       ip = s.slice(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/)
       next if ip.nil?
 
-      @ip_list.push(ip)
+      @ip_list << ip
     end
 
     @ip_list.sort_by! { |s| s.split(".").map(&:to_i) }

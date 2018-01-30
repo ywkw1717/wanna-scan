@@ -35,7 +35,7 @@ class SMB
     tmp.shift # delete first element
 
     tmp.map do |s|
-      @request.push([s.hex].pack("C*"))
+      @request << [s.hex].pack("C*")
     end
 
     @request = @request.join
