@@ -77,9 +77,10 @@ class DoublePulsarScan < SMB
         @logger.puts "[-] DoublePulsar is not found"
       end
 
-      @logger.puts("[*] DoublePulsar Scan finish")
+      @logger.puts("[*] DoublePulsar Scan finish\n")
     rescue => e
       puts e
+      puts "\n"
     ensure
       @sock.close
     end
