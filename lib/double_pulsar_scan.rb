@@ -35,7 +35,7 @@ class DoublePulsarScan < SMB
       '\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # other data
     ]
 
-    @logger.puts("\n[*] DoublePulsar Scan start")
+    @m = Mutex.new
 
     @sock.write(@negotiate_protocol.request)
 
@@ -71,19 +71,31 @@ class DoublePulsarScan < SMB
     begin
       parse_response(@sock.readpartial(4096).unpack("C*"))
 
-      if @multiplex_id[0] == 81
-        @logger.puts "[+] " + @host + " has been infected with DoublePulsar"
-      else
-        @logger.puts "[-] DoublePulsar is not found"
-      end
-
-      @logger.puts("[*] DoublePulsar Scan finish\n")
+      @m.synchronize {
+        logging
+      }
     rescue => e
-      puts e
-      puts "\n"
+      @m.synchronize {
+        @logger.puts("\n[*] DoublePulsar Scan start")
+        puts e
+        @logger.puts("[*] DoublePulsar Scan finish\n")
+        puts "\n"
+      }
     ensure
       @sock.close
     end
+  end
+
+  def logging
+    @logger.puts("\n[*] DoublePulsar Scan start")
+
+    if @multiplex_id[0] == 81
+      @logger.puts "[+] " + @host + " has been infected with DoublePulsar"
+    else
+      @logger.puts "[-] DoublePulsar is not found"
+    end
+
+    @logger.puts("[*] DoublePulsar Scan finish\n\n")
   end
 
   def parse_response(response)

@@ -12,11 +12,11 @@ class Ms17010Scan
     @sock               = TCPSocket.open(@host, @port)
     @negotiate_protocol = NegotiateProtocol.new
     @session_setup_andx = SessionSetupAndX.new
+
+    @m = Mutex.new
   end
 
   def start
-    @logger.puts("[*] MS17-010 Scan start")
-
     @sock.write(@negotiate_protocol.request)
 
     begin
@@ -32,22 +32,36 @@ class Ms17010Scan
       @sock.write(@tree_connect_andx.request)
       @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
 
-      peek_named_pipe = PeekNamedPipe.new(@tree_connect_andx.tree_id, @session_setup_andx.user_id)
-      @sock.write(peek_named_pipe.request)
-      peek_named_pipe.response = @sock.readpartial(4096).unpack("C*")
+      @@peek_named_pipe = PeekNamedPipe.new(@tree_connect_andx.tree_id, @session_setup_andx.user_id)
+      @sock.write(@@peek_named_pipe.request)
+      @@peek_named_pipe.response = @sock.readpartial(4096).unpack("C*")
 
-      if peek_named_pipe.nt_status == 'c0000205'
-        @logger.puts "[+] " + @host + " has a vulnerability of MS17-010"
-      else
-        @logger.puts "[-] The vulnerability is not found"
-      end
+      @m.synchronize {
+        logging
+      }
+    rescue => e
+      @logger.puts("[*] MS17-010 Scan start")
+      @logger.puts "[*] OS: #{@session_setup_andx.native_os}, IP: #{@host}"
+
+      puts e
 
       @logger.puts("[*] MS17-010 Scan finish")
-    rescue => e
-      puts e
     ensure
       @sock.close
     end
+  end
+
+  def logging
+    @logger.puts("[*] MS17-010 Scan start")
+    @logger.puts "[*] OS: #{@session_setup_andx.native_os}, IP: #{@host}"
+
+    if @@peek_named_pipe.nt_status == 'c0000205'
+      @logger.puts "[+] " + @host + " has a vulnerability of MS17-010"
+    else
+      @logger.puts "[-] The vulnerability is not found"
+    end
+
+    @logger.puts("[*] MS17-010 Scan finish")
   end
 
   def session_setup_andx
