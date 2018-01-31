@@ -25,9 +25,8 @@ class Ms17010Scan
 
       @sock.write(@session_setup_andx.request)
       @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
-      @logger.puts "[*] OS: #{@session_setup_andx.native_os}, IP: #{@host}"
 
-      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join)
+      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join, (@host.length.to_i + 58).to_s(16))
 
       @sock.write(@tree_connect_andx.request)
       @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")

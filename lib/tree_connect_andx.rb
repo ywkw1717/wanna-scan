@@ -1,8 +1,8 @@
 require_relative 'smb'
 
 class TreeConnectAndX < SMB
-  def initialize(user_id, ip)
-    super(length: '\x00\x00\x45', smb_command: '\x75', user_id: user_id)
+  def initialize(user_id, ip, len)
+    super(length: '\x00\x00\x' + len, smb_command: '\x75', flags2: '\x01\x20', user_id: user_id)
 
     @tree_connect_andx_request = [
       '\x04', # Word Count (WCT)
@@ -11,7 +11,7 @@ class TreeConnectAndX < SMB
       '\x00\x00', # AndXOffset
       '\x00\x00', # Flags
       '\x01\x00', # Password Length
-      '\x1a\x00', # Byte Count (BCC)
+      '\x1b\x00', # Byte Count (BCC)
       '\x00', # Password
       '\x5c\x5c', # \\
       ip, # IP Address
