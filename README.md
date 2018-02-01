@@ -1,7 +1,17 @@
 # Hey WannaCry FUCK YOU!
 wanna-scan is a scanner to look for MS17-010 and DoublePulsar. wanna-scan can look for all computers of same network.
 
-# Usage
+## Requirement
+- ruby >= 2.0.0
+- nmap >= 6.40
+
+## Install
+```
+$ git clone https://github.com/ywkw1717/wanna-scan
+$ sudo apt-get install nmap
+```
+
+## Usage
 ```
 Usage: ruby wanna-scan.rb [options] {value}
 
