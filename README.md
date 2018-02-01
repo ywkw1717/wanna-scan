@@ -16,6 +16,7 @@ $ ruby wanna-scan.rb -i 192.168.0.153
 ```
 
 If you want to check all computers of same network
+(In this case, "enp0s9" is device name of network interface card)
 ```ruby
 $ ruby wanna-scan -I enp0s9
 [*] MS17-010 Scan start
