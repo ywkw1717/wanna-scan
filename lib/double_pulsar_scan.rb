@@ -4,14 +4,9 @@ require_relative 'session_setup_andx'
 require_relative 'tree_connect_andx'
 
 class DoublePulsarScan < SMB
-  def initialize(host)
+  def initialize
     @logger = STDERR
-    @host   = host
     @port   = 445
-    @sock   = TCPSocket.open(@host, @port)
-
-    @negotiate_protocol = NegotiateProtocol.new
-    @session_setup_andx = SessionSetupAndX.new
 
     @trans2_request = [
       '\x0f', # Word Count (WCT)
@@ -36,66 +31,72 @@ class DoublePulsarScan < SMB
     ]
 
     @m = Mutex.new
+    @vulnerable_host = []
+  end
 
-    @sock.write(@negotiate_protocol.request)
+  def start(ip)
+    host = ip
+    sock = TCPSocket.open(host, @port)
+
+    negotiate_protocol = NegotiateProtocol.new
+    session_setup_andx = SessionSetupAndX.new
+
+    sock.write(negotiate_protocol.request)
 
     begin
-      @negotiate_protocol.response = @sock.readpartial(4096).unpack("C*")
+      while select [sock], nil, nil, 0.5
+        negotiate_protocol.response = sock.readpartial(4096).unpack("C*")
+      end
 
-      @sock.write(@session_setup_andx.request)
-      @session_setup_andx.response = @sock.readpartial(4096).unpack("C*")
+      sock.write(session_setup_andx.request)
+      while select [sock], nil, nil, 0.5
+        session_setup_andx.response = sock.readpartial(4096).unpack("C*")
+      end
 
-      @tree_connect_andx = TreeConnectAndX.new(@session_setup_andx.user_id, @host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join, (@host.length.to_i + 58).to_s(16))
+      tree_connect_andx = TreeConnectAndX.new(
+        session_setup_andx.user_id,
+        host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join,
+        (host.length.to_i + 58).to_s(16)
+      )
 
-      @sock.write(@tree_connect_andx.request)
-      @tree_connect_andx.response = @sock.readpartial(4096).unpack("C*")
+      sock.write(tree_connect_andx.request)
+      while select [sock], nil, nil, 0.5
+        tree_connect_andx.response = sock.readpartial(4096).unpack("C*")
+      end
 
       super(
         length: '\x00\x00\x4f',
         smb_command: '\x32',
         flags2: '\x07\xc0',
-        tree_id: @tree_connect_andx.tree_id,
-        user_id: @session_setup_andx.user_id,
+        tree_id: tree_connect_andx.tree_id,
+        user_id: session_setup_andx.user_id,
         multiplex_id: '\x41\x00'
       )
 
       make_request(@netbios_session_service, @smb_header, @trans2_request)
     rescue => e
-      puts e
+      # puts e
     end
-  end
 
-  def start
-    @sock.write(@request)
+    sock.write(@request)
 
     begin
-      parse_response(@sock.readpartial(4096).unpack("C*"))
+      while select [sock], nil, nil, 0.5
+        parse_response(sock.readpartial(4096).unpack("C*"))
+      end
 
-      @m.synchronize {
-        logging
-      }
+      if @multiplex_id[0] == 81
+        @vulnerable_host << host
+      end
     rescue => e
-      @m.synchronize {
-        @logger.puts("\n[*] DoublePulsar Scan start")
-        puts e
-        @logger.puts("[*] DoublePulsar Scan finish\n")
-        puts "\n"
-      }
+      # puts e
     ensure
-      @sock.close
+      sock.close
     end
   end
 
-  def logging
-    @logger.puts("\n[*] DoublePulsar Scan start")
-
-    if @multiplex_id[0] == 81
-      @logger.puts "[+] " + @host + " has been infected with DoublePulsar"
-    else
-      @logger.puts "[-] DoublePulsar is not found"
-    end
-
-    @logger.puts("[*] DoublePulsar Scan finish\n\n")
+  def vulnerable_host
+    @vulnerable_host
   end
 
   def parse_response(response)
