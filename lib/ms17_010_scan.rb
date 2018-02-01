@@ -6,15 +6,15 @@ require_relative 'peek_named_pipe'
 
 class Ms17010Scan
   def initialize(logger: STDERR)
-    @logger             = logger
-    @port               = 445
-    @vulnerable_host    = []
-    @m                  = Mutex.new
+    @logger          = logger
+    @port            = 445
+    @vulnerable_host = []
+    @m               = Mutex.new
   end
 
   def start(ip)
-    host = ip
-    sock = TCPSocket.open(host, @port)
+    host               = ip
+    sock               = TCPSocket.open(host, @port)
     negotiate_protocol = NegotiateProtocol.new
     session_setup_andx = SessionSetupAndX.new
 

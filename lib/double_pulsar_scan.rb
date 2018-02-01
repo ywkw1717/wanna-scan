@@ -5,8 +5,10 @@ require_relative 'tree_connect_andx'
 
 class DoublePulsarScan < SMB
   def initialize
-    @logger = STDERR
-    @port   = 445
+    @logger          = STDERR
+    @port            = 445
+    @m               = Mutex.new
+    @vulnerable_host = []
 
     @trans2_request = [
       '\x0f', # Word Count (WCT)
@@ -29,15 +31,11 @@ class DoublePulsarScan < SMB
       '\x00\x00', # Byte Count (BCC)
       '\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' # other data
     ]
-
-    @m = Mutex.new
-    @vulnerable_host = []
   end
 
   def start(ip)
-    host = ip
-    sock = TCPSocket.open(host, @port)
-
+    host               = ip
+    sock               = TCPSocket.open(host, @port)
     negotiate_protocol = NegotiateProtocol.new
     session_setup_andx = SessionSetupAndX.new
 
@@ -103,7 +101,6 @@ class DoublePulsarScan < SMB
     @netbios_session_service = response[0..3]
     @smb_header              = response[4..35]
     @trans_response          = response[36..-1]
-
-    @multiplex_id = @smb_header[-2..-1]
+    @multiplex_id            = @smb_header[-2..-1]
   end
 end
