@@ -4,11 +4,13 @@ wanna-scan is a scanner to look for MS17-010 and DoublePulsar. wanna-scan can lo
 ## Requirements
 - ruby >= 2.0.0
 - nmap >= 6.40
+- arp-scan >= 1.8.1
 
 ## Install
 ```
 $ git clone https://github.com/ywkw1717/wanna-scan
 $ sudo apt-get install nmap
+$ sudo apt-get install arp-scan
 ```
 
 ## Usage
