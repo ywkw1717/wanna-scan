@@ -19,10 +19,10 @@ params = ARGV.getopts("i:I:")
 if params["i"] && params["I"]
   puts "You can not specify both options.\n\n"
   usage
-  return
+  exit
 elsif !params["i"] && !params["I"]
   usage
-  return
+  exit
 end
 
 # [TODO] check the input value?
@@ -33,7 +33,7 @@ unless ip.nil?
 
   if port_scan.open_445_list.empty?
     puts("#{ip} is not opening 445 port.")
-    return
+    exit
   end
 
   puts("[*] MS17-010 Scan start")
@@ -62,7 +62,7 @@ unless ip.nil?
 
   puts("[*] DoublePulsar Scan finish\n\n")
 
-  return
+  exit
 end
 
 # [TODO] check the input value?
