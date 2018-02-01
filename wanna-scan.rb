@@ -7,10 +7,10 @@ require_relative 'lib/port_scan.rb'
 
 def usage
   puts <<-"EOS"
-Usage: ruby starter.rb [options] {value}
+Usage: ruby wanna-scan.rb [options] {value}
 
 Options:
-   i [ip addr]  scan ip
+  -i [ip addr]  scan ip
   -I [nic]      scan nic
 EOS
 end
