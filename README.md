@@ -3,7 +3,7 @@ wanna-scan is a scanner to look for MS17-010 and DoublePulsar. wanna-scan can lo
 
 # Usage
 
-If you want to check one IP
+If you want to check one IP address
 ```ruby
 $ ruby wanna-scan.rb -i 192.168.0.153
 [*] MS17-010 Scan start
