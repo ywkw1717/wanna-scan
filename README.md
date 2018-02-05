@@ -2,7 +2,7 @@
 wanna-scan is a scanner to look for MS17-010 and DoublePulsar. wanna-scan can look for all computers of same network.
 
 ## Requirements
-- ruby >= 2.0.0
+- ruby >= 2.4.0
 - nmap >= 6.40
 - arp-scan >= 1.8.1
 
