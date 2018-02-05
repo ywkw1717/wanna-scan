@@ -6,22 +6,22 @@ require_relative 'lib/host_scan.rb'
 require_relative 'lib/port_scan.rb'
 
 def usage
-  puts <<-"EOS"
-Usage: ruby wanna-scan.rb [options] {value}
+  <<~USAGE
+    Usage: ruby wanna-scan.rb [options] {value}
 
-Options:
-  -i [ip addr]  scan ip
-  -I [nic]      scan nic
-EOS
+    Options:
+      -i [ip addr]  scan ip
+      -I [nic]      scan nic
+  USAGE
 end
 
 params = ARGV.getopts("i:I:")
 if params["i"] && params["I"]
   puts "You can not specify both options.\n\n"
-  usage
+  puts usage
   exit
 elsif !params["i"] && !params["I"]
-  usage
+  puts usage
   exit
 end
 
