@@ -29,7 +29,7 @@ class SMB
     @request = []
     tmp      = []
 
-    elm.map {|s| tmp.concat(s)}
+    elm.map { |s| tmp.concat(s) }
 
     tmp = tmp.join.split('\\x')
     tmp.shift # delete first element
