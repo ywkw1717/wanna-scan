@@ -10,6 +10,6 @@ class PortScan
   end
 
   def open_445_list
-    @open_445_list.sort_by { |s| s.split(".").map(&:to_i) }
+    @open_445_list.sort_by { |s| s.split('.').map(&:to_i) }
   end
 end

@@ -43,23 +43,23 @@ class DoublePulsarScan < SMB
 
     begin
       while select [sock], nil, nil, 0.5
-        negotiate_protocol.response = sock.readpartial(4096).unpack("C*")
+        negotiate_protocol.response = sock.readpartial(4096).unpack('C*')
       end
 
       sock.write(session_setup_andx.request)
       while select [sock], nil, nil, 0.5
-        session_setup_andx.response = sock.readpartial(4096).unpack("C*")
+        session_setup_andx.response = sock.readpartial(4096).unpack('C*')
       end
 
       tree_connect_andx = TreeConnectAndX.new(
         session_setup_andx.user_id,
-        host.unpack("C*").map { |s| '\x' + s.to_s(16) }.join,
+        host.unpack('C*').map { |s| '\x' + s.to_s(16) }.join,
         (host.length.to_i + 58).to_s(16)
       )
 
       sock.write(tree_connect_andx.request)
       while select [sock], nil, nil, 0.5
-        tree_connect_andx.response = sock.readpartial(4096).unpack("C*")
+        tree_connect_andx.response = sock.readpartial(4096).unpack('C*')
       end
 
       super(
@@ -80,7 +80,7 @@ class DoublePulsarScan < SMB
 
     begin
       while select [sock], nil, nil, 0.5
-        parse_response(sock.readpartial(4096).unpack("C*"))
+        parse_response(sock.readpartial(4096).unpack('C*'))
       end
 
       if @multiplex_id[0] == 81

@@ -31,11 +31,11 @@ class SMB
 
     elm.map {|s| tmp.concat(s)}
 
-    tmp = tmp.join.split("\\x")
+    tmp = tmp.join.split('\\x')
     tmp.shift # delete first element
 
     tmp.map do |s|
-      @request << [s.hex].pack("C*")
+      @request << [s.hex].pack('C*')
     end
 
     @request = @request.join
