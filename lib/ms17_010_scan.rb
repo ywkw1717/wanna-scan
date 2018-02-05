@@ -48,9 +48,7 @@ class Ms17010Scan
       end
 
       @m.synchronize do
-        if peek_named_pipe.nt_status == 'c0000205'
-          @vulnerable_host << host
-        end
+        @vulnerable_host << host if peek_named_pipe.nt_status == 'c0000205'
       end
     rescue => e
       # puts e
