@@ -6,7 +6,7 @@ require_relative 'lib/port_scan.rb'
 
 def usage
   <<~USAGE
-    Usage: ruby wanna-scan.rb [options] {value}
+    Usage: ruby wanna_scan.rb [options] {value}
 
     Options:
       -i [ip addr]  scan ip
