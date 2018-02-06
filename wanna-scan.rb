@@ -1,4 +1,3 @@
-require 'thread'
 require 'optparse'
 require_relative 'lib/ms17_010_scan'
 require_relative 'lib/double_pulsar_scan'
