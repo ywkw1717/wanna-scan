@@ -7,7 +7,6 @@ class DoublePulsarScan < SMB
   def initialize
     @logger          = STDERR
     @port            = 445
-    @m               = Mutex.new
     @vulnerable_host = []
 
     @trans2_request = [
