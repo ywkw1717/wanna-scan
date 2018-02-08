@@ -33,7 +33,7 @@ class Ms17010Scan
       tree_connect_andx = TreeConnectAndX.new(
         session_setup_andx.user_id,
         host.unpack('C*').map { |s| '\x' + s.to_s(16) }.join,
-        (host.length.to_i + 58).to_s(16)
+        host.length.to_i
       )
 
       sock.write(tree_connect_andx.request)
