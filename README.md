@@ -48,3 +48,8 @@ $ ruby wanna_scan.rb -I enp0s9
 nothing
 [*] DoublePulsar Scan finish
 ```
+
+# Information
+Also, I made this program.
+
+[https://github.com/ywkw1717/get_wanna_packet](https://github.com/ywkw1717/get_wanna_packet)
