@@ -61,16 +61,29 @@ class DoublePulsarScan < SMB
         tree_connect_andx.response = sock.readpartial(4096).unpack('C*')
       end
 
-      super(
-        length: '\x00\x00\x4f',
-        smb_command: '\x32',
-        flags2: '\x07\xc0',
-        tree_id: tree_connect_andx.tree_id,
-        user_id: session_setup_andx.user_id,
-        multiplex_id: '\x41\x00'
-      )
+      netbios_session_service = [
+        '\x00', # Message Type: Session message (0x00)
+        '\x00\x00\x4f' # Length
+      ]
 
-      make_request(@netbios_session_service, @smb_header, @trans2_request)
+      smb_header = [
+        '\xff\x53\x4d\x42', # Server Component: SMB
+        '\x32', # SMB Command: Negotiate Protocol
+        '\x00', # Error Class: Success (0x00)
+        '\x00', # Reserved
+        '\x00\x00', # Error Code: No Error
+        '\x18', # Flags
+        '\x07\xc0', # Flags2
+        '\x00\x00', # Process ID High
+        '\x00\x00\x00\x00\x00\x00\x00\x00', # Signature
+        '\x00\x00', # Reserved
+        tree_connect_andx.tree_id, # Tree ID
+        '\xf0\x58', # Process ID
+        session_setup_andx.user_id, # User ID
+        '\x41\x00' # Multiplex ID
+      ]
+
+      make_request(netbios_session_service, smb_header, @trans2_request)
     rescue => e
       # puts e
     end
