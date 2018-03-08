@@ -95,6 +95,8 @@ class DoublePulsarScan < SMB
         parse_response(sock.readpartial(4096).unpack('C*'))
       end
 
+      puts '[FOR DEBUG] multiplex_id: ' + @multiplex_id[0].to_s
+
       if @multiplex_id[0] == 81
         @vulnerable_host << host
       end
