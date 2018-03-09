@@ -92,12 +92,12 @@ class DoublePulsarScan < SMB
 
     begin
       while select [sock], nil, nil, 0.5
-        parse_response(sock.readpartial(4096).unpack('C*'))
+        smb_header, multiplex_id = parse_response(sock.readpartial(4096).unpack('C*'))
       end
 
-      puts '[FOR DEBUG] multiplex_id: ' + @multiplex_id[0].to_s
+      puts '[FOR DEBUG] multiplex_id: ' + multiplex_id[0].to_s
 
-      if @multiplex_id[0] == 81
+      if multiplex_id[0] == 81
         @vulnerable_host << host
       end
     rescue => e
@@ -112,9 +112,11 @@ class DoublePulsarScan < SMB
   end
 
   def parse_response(response)
-    @netbios_session_service = response[0..3]
-    @smb_header              = response[4..35]
-    @trans_response          = response[36..-1]
-    @multiplex_id            = @smb_header[-2..-1]
+    netbios_session_service = response[0..3]
+    smb_header              = response[4..35]
+    trans_response          = response[36..-1]
+    multiplex_id            = smb_header[-2..-1]
+
+    return smb_header, multiplex_id
   end
 end
